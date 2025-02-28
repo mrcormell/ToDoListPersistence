@@ -7,10 +7,12 @@
 
 import SwiftUI
 
+let darkModeKey = "DarkMode"
+
 struct ContentView: View {
-    @State private var isDarkMode: Bool = false
+    @State private var isDarkMode: Bool = UserDefaults.standard.bool(forKey: darkModeKey)
     @State private var showingAddSheet: Bool = false
-    @State private var todos: [String] = ["Pick up dry cleaning", "Book an online groceries delivery", "File tax return"]
+    @State private var todos: [String] = UserDefaults.standard.object(forKey: "ToDoList") as? [String] ?? [String]()
     @State private var newTodo = ""
     
     var body: some View {
@@ -32,10 +34,14 @@ struct ContentView: View {
                         todos.append(newTodo)
                         newTodo = ""
                         showingAddSheet = false
+                        UserDefaults.standard.set(todos, forKey: "ToDoList")
                     }
                 }
             }
             Toggle("Dark Mode", isOn: $isDarkMode)
+                .onChange(of: isDarkMode) {
+                    UserDefaults.standard.set(isDarkMode, forKey: darkModeKey)
+                }
                 .padding()
         }
         .preferredColorScheme(isDarkMode ? .dark : .light)
